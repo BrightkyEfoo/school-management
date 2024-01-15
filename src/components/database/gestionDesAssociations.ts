@@ -25,10 +25,15 @@ const initAssociations = () => {
     through: Matiere_Classe,
     onDelete: 'cascade',
   });
-  Matiere.belongsTo(GroupeDeMatieres);
+  Matiere.belongsToMany(GroupeDeMatieres, {
+    through: 'Matiere_GroupeDeMatieres',
+  });
 
   // groupe-de-matieres
-  GroupeDeMatieres.hasMany(Matiere, { onDelete: 'cascade' });
+  GroupeDeMatieres.belongsToMany(Matiere, {
+    through: 'Matiere_GroupeDeMatieres',
+    onDelete: 'cascade',
+  });
   GroupeDeMatieres.belongsToMany(Classe, {
     through: Classes_GroupeDeMatieres,
     onDelete: 'cascade',

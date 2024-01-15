@@ -20,8 +20,8 @@ class Matiere extends Model {
   declare id: number;
   declare nom: string;
 
-  declare getGroupeDeMatieres: BelongsToGetAssociationMixin<GroupeDeMatieres>;
-  declare setGroupeDeMatieres: BelongsToSetAssociationMixin<
+  declare getGroupeDeMatieres: BelongsToManyGetAssociationsMixin<GroupeDeMatieres>;
+  declare addGroupeDeMatieres: BelongsToManyAddAssociationMixin<
     GroupeDeMatieres,
     number
   >;
@@ -40,7 +40,7 @@ Matiere.init(
     },
     nom: {
       type: DataTypes.STRING,
-      allowNull : false
+      allowNull: false,
     },
   },
   {

@@ -16,7 +16,7 @@ const sequelize = dbService.sequelize;
 class Bulletin extends Model {
   declare id: number;
   declare moyenne: number;
-  declare annee: Date;
+  declare annee: number;
   declare getClasse: BelongsToGetAssociationMixin<Classe>;
   declare setClasse: BelongsToSetAssociationMixin<Classe, number>;
   declare getEtudiant: BelongsToGetAssociationMixin<Etudiant>;
@@ -37,7 +37,7 @@ Bulletin.init(
       allowNull: false,
     },
     annee: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

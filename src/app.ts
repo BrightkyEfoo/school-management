@@ -32,20 +32,17 @@ app.get('/', (req, res) => {
 app.use('/api/v1/etudiant', etudiantRouter);
 app.use('/api/v1/classe', classRouter);
 
-app.use(async (err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log('err', err);
-  await errorHandler.handleError(err, res);
-});
+// app.use();
 
 app.listen(port, async () => {
   console.log(`Server listening on port ${port}`);
   await demarrerBd();
 });
 
-process.on('uncaughtException', (error: Error) => {
-  errorHandler.handleError(error);
-});
+// process.on('uncaughtException', (error: any) => {
+//   errorHandler.handleError(error);
+// });
 
-process.on('unhandledRejection', (reason: any) => {
-  errorHandler.handleError(reason);
-});
+// process.on('unhandledRejection', (reason: any) => {
+//   errorHandler.handleError(reason);
+// });

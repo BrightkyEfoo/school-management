@@ -2,10 +2,12 @@ import {
   BelongsToGetAssociationMixin,
   BelongsToManyAddAssociationMixin,
   BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
   BelongsToSetAssociationMixin,
   DataTypes,
   HasManyAddAssociationMixin,
   HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
   Model,
 } from 'sequelize';
 import { dbService } from '../database';
@@ -31,8 +33,10 @@ class Classe extends Model {
   declare addBulletin: HasManyAddAssociationMixin<Bulletin, number>;
   declare getMatieres: BelongsToManyGetAssociationsMixin<Matiere>;
   declare addMatiere: BelongsToManyAddAssociationMixin<Matiere, number>;
+  declare removeMatiere: BelongsToManyRemoveAssociationMixin<Matiere, number>;
   declare getEtudiants: HasManyGetAssociationsMixin<Etudiant>;
   declare addEtudiant: HasManyAddAssociationMixin<Etudiant, number>;
+  declare removeEtudiant: HasManyRemoveAssociationMixin<Etudiant, number>;
   declare getMethodeDePaiement: BelongsToGetAssociationMixin<MethodeDePaiement>;
   declare setMethodeDePaiement: BelongsToSetAssociationMixin<
     MethodeDePaiement,

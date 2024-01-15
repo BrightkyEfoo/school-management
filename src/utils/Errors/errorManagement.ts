@@ -2,6 +2,8 @@ class ErrorManagement {
   commonErrors = {
     entreeInvalide: 'entreeInvalide',
     horsDesLimites: 'horsDesLimites',
+    notFound: 'notFound',
+    misconfiguration: 'misconfiguration',
   };
 }
 

@@ -30,6 +30,8 @@ const readOne = async (idNote: number) => {
   }
 };
 
+
+
 const noteService = {
   create,
   readOne,

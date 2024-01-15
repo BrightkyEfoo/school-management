@@ -1,7 +1,12 @@
-import { BelongsToManyAddAssociationMixin, BelongsToManyGetAssociationsMixin, DataTypes, HasManyAddAssociationMixin, HasManyGetAssociationsMixin, Model } from 'sequelize';
+import {
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  DataTypes,
+  Model,
+} from 'sequelize';
+import { Classe } from '../classe';
 import { dbService } from '../database';
 import { Matiere } from '../matiere';
-import { Classe } from '../classe';
 
 const db = dbService;
 const sequelize = db.sequelize;
@@ -9,8 +14,8 @@ const sequelize = db.sequelize;
 class GroupeDeMatieres extends Model {
   declare id: string;
   declare nom: string;
-  declare getMatieres: HasManyGetAssociationsMixin<Matiere>;
-  declare addMatiere: HasManyAddAssociationMixin<Matiere, number>;
+  declare getMatieres: BelongsToManyGetAssociationsMixin<Matiere>;
+  declare addMatiere: BelongsToManyAddAssociationMixin<Matiere, number>;
   declare getClasses: BelongsToManyGetAssociationsMixin<Classe>;
   declare addClasse: BelongsToManyAddAssociationMixin<Classe, number>;
 }

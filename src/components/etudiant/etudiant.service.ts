@@ -5,6 +5,8 @@ import { methode_de_paiementService } from '../methode_de_paiement';
 import { Recu, recuService } from '../recu';
 import { Etudiant } from './etudiant.model';
 import { TEtudiant } from './etudiant.types';
+import { AppError, errorManagement } from '../../utils';
+import { Note } from '../notes';
 
 const create = async (etudiant: TEtudiant, classe_id?: number) => {
   try {
@@ -22,7 +24,7 @@ const create = async (etudiant: TEtudiant, classe_id?: number) => {
 const ReadOneById = async (id: number) => {
   try {
     const etudiant = await Etudiant.findByPk(id, {
-      include: [Classe, Bulletin],
+      include: [Classe, Bulletin, Recu],
     });
     return etudiant?.toJSON();
   } catch (error) {
@@ -39,17 +41,29 @@ const buyTranche = async (id: number, tranche: number) => {
     // on recherche la classe de l'etudiant
     const classe = await classeService.ReadOne(etudiant.Classe.id);
     if (!classe)
-      throw new Error("cet etudiant n'est inscrit dans aucune classe");
+      throw new AppError(
+        errorManagement.commonErrors.misconfiguration,
+        "cet etudiant n'est inscrit dans aucune classe",
+        true
+      );
 
     // on recherche la methode de paiement
     const methode = await methode_de_paiementService.readOne(
       classe.MethodeDePaiement.id
     );
     if (!methode)
-      throw new Error('cette classe ne possede aucune methode de paiement');
+      throw new AppError(
+        errorManagement.commonErrors.notFound,
+        'cette classe ne possede aucune methode de paiement',
+        true
+      );
 
     if (methode.tranches < tranche || tranche <= 0) {
-      throw new Error('Le numero de la tranche est incorrect');
+      throw new AppError(
+        errorManagement.commonErrors.entreeInvalide,
+        'Le numero de la tranche est incorrect',
+        true
+      );
     }
     const totalTranche = methode.total / methode.tranches;
     const recu = await recuService.create(
@@ -67,13 +81,19 @@ const buyTranche = async (id: number, tranche: number) => {
   }
 };
 
-const viewRecuOfThisYear = async (id: number) => {
+const viewRecuOfAYear = async (id: number, year?: number) => {
   const now = new Date();
-  console.log('year', now.getFullYear());
   try {
     const recus = await Recu.findAll({
       where: {
-        [Op.and]: where(fn('YEAR', col('created_at')), now.getFullYear()),
+        [Op.and]: where(
+          fn('YEAR', col('Recu.created_at')),
+          year || now.getFullYear()
+        ),
+      },
+      include: {
+        model: Etudiant,
+        where: { id },
       },
     });
     return recus.map(el => {
@@ -85,11 +105,85 @@ const viewRecuOfThisYear = async (id: number) => {
   }
 };
 
+const viewBulletinOfAYear = async (id: number, year?: number) => {
+  const now = new Date();
+  console.log('now', now);
+  try {
+    const bulletins = await Bulletin.findAll({
+      where: {
+        [Op.and]: where(
+          fn('YEAR', col('Bulletin.created_at')),
+          year || now.getFullYear()
+        ),
+      },
+      include: [
+        {
+          model: Etudiant,
+          where: { id },
+        },
+        Note,
+      ],
+    });
+    console.log(bulletins);
+    return bulletins.map(el => {
+      return el.toJSON();
+    });
+  } catch (error) {
+    console.log('error', error);
+    throw new Error("erreur lors de la recherche des bulettins de l'etudiant");
+  }
+};
+
+const changerClasse = async (idEtudiant: number, idNewClasse: number) => {
+  try {
+    const etudiant = await Etudiant.findByPk(idEtudiant);
+    if (!etudiant)
+      throw new AppError(
+        errorManagement.commonErrors.notFound,
+        'Etudiant non trouvee',
+        true
+      );
+
+    const classe = await classeService.ReadOne(idNewClasse);
+    if (!classe)
+      throw new AppError(
+        errorManagement.commonErrors.notFound,
+        'Aucune classe trouvee',
+        true
+      );
+
+    etudiant.setClasse(idNewClasse);
+  } catch (error) {
+    throw new Error('erreur lors de la tentative de changement de classe');
+  }
+};
+
+const viewClasse = async (idEtudiant: number) => {
+  const etudiant = await Etudiant.findByPk(idEtudiant, { include: Classe });
+  if (!etudiant)
+    throw new AppError(
+      errorManagement.commonErrors.notFound,
+      'Aucun etudiant trouve',
+      true
+    );
+  const classe = etudiant.toJSON().Classe;
+  if (!classe)
+    throw new AppError(
+      errorManagement.commonErrors.notFound,
+      'Aucune classe trouvee',
+      true
+    );
+  return classe;
+};
+
 const etudiantService = {
   create,
   ReadOneById,
   buyTranche,
-  viewRecuOfThisYear,
+  viewRecuOfAYear,
+  changerClasse,
+  viewClasse,
+  viewBulletinOfAYear,
 };
 
 export { etudiantService };

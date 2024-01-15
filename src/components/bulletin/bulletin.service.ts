@@ -14,7 +14,7 @@ const create = async (
     const bulletin = await Bulletin?.create(submittedBulletin);
     bulletin.setClasse(classe_id);
     bulletin.setEtudiant(etudiant_id);
-    return Bulletin;
+    return bulletin.toJSON();
   } catch (error) {
     throw new Error('erreur lors de la creation du Bulletin!');
   }
@@ -31,6 +31,8 @@ const ReadOne = async (idBulletin: number) => {
     throw new Error('erreur lors de la lecture du Bulletin!');
   }
 };
+
+// const readBulletinOfAYear = ()
 
 export const bulletinService = {
   create,
